@@ -11,17 +11,18 @@ app = Flask(__name__)
 CORS(app)
 
 app_port = int(os.environ.get("FLASK_RUN_PORT"))
+host = os.environ.get("FLASK_RUN_HOST")
+other_servers: list[str] = os.environ.get("FLASK_RUN_OTHER_SERVERS").strip().split(",")
+
 count_history = set()
-other_servers: list[int] = list(filter(lambda port: port != app_port, [5000, 5001, 5002]))
-host = "http://localhost"
 
 
 def ping_servers() -> set[float]:
-    port = random.choice(other_servers)
+    host = random.choice(other_servers)
 
     try:
         response = requests.get(
-            f"{host}:{port}/history",
+            f"http://{host}/history",
             timeout=1
         )
     except Exception as _:
@@ -31,16 +32,16 @@ def ping_servers() -> set[float]:
 
 
 def update_server_history(timestamp: float):
-    for port in other_servers:
+    for host in other_servers:
         try:
             requests.put(
-                f"{host}:{port}/history",
+                f"http://{host}/history",
                 json={"timestamp": timestamp},
                 headers={"Content-Type": "application/json"},
                 timeout=0.5
             )
         except Exception as _:
-            print(f"Failed to update history of {port}")
+            print(f"Failed to update history of {host}")
             return
 
 
@@ -73,4 +74,4 @@ def get() -> tuple[str, HTTPStatus]:
 
 if __name__ == '__main__':
     count_history = ping_servers()
-    app.run(debug=True, port=int(os.environ.get("FLASK_RUN_PORT")))
+    app.run(debug=True, port=app_port, host=host)
