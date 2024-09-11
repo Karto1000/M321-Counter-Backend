@@ -61,9 +61,12 @@ for commit in commits_since_tag:
     elif re.search(f"(feat)", commit_type):
         # Minor
         versions.minor += 1
+        versions.patch = 0
     elif re.search(r"(BREAKING_CHANGE)", commit_type):
         # Major
         versions.major += 1
+        versions.minor = 0
+        versions.patch = 0
     else:
         print(f"Invalid commit type {commit_type}")
 
