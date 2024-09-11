@@ -2,7 +2,7 @@
 import re
 import sys
 
-MESSAGE_REGEX = re.compile(r"^#\d+\s(feat|fix|build|chore|ci|docs|style|refactor|perf|test):\s")
+MESSAGE_REGEX = re.compile(r"^#\d+\s(feat|fix|build|chore|ci|docs|style|refactor|perf|test|BREAKING_CHANGE):\s")
 
 with open(sys.argv[1], "r") as f:
     message = f.read()
