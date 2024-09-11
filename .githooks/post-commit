@@ -71,7 +71,5 @@ for commit in commits_since_tag:
     else:
         print(f"Invalid commit type {commit_type}")
 
-Versions.from_version_str(str(versions))
-
 subprocess.call(f"git tag {versions}")
 subprocess.call(f"git push --tags")
