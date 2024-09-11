@@ -4,7 +4,6 @@ import re
 import subprocess
 import sys
 from typing import Self
-import typing
 
 
 @dataclasses.dataclass
