@@ -3,7 +3,7 @@ import dataclasses
 import re
 import subprocess
 import sys
-from typing import TypedDict, Self
+from typing import Self
 
 
 @dataclasses.dataclass
@@ -36,8 +36,10 @@ if current_branch != "main":
     sys.exit(0)
 
 try:
-    latest_tag = subprocess.check_output("git describe --tags --abbrev=0", stderr=subprocess.STDOUT).decode("utf-8").strip()
-    commits_since_tag = subprocess.check_output(f"git log {latest_tag}..HEAD --pretty=format:%s")
+    latest_tag = subprocess.check_output("git describe --tags --abbrev=0", stderr=subprocess.STDOUT).decode(
+        "utf-8").strip()
+    commits_since_tag = subprocess.check_output(f"git log {latest_tag}..HEAD --pretty=format:%s").decode("utf-8").split("\n")
+    versions = Versions.from_version_str(latest_tag)
 except subprocess.CalledProcessError as e:
     if e.output.decode("utf-8").strip() != "fatal: No names found, cannot describe anything.":
         sys.exit(f"Error while getting tags {e}")
@@ -45,25 +47,25 @@ except subprocess.CalledProcessError as e:
     commits_since_tag = subprocess.check_output(f"git log --pretty=format:%s").decode("utf-8").split("\n")
     versions = Versions(patch=0, minor=0, major=0)
 
-    for commit in commits_since_tag:
-        split = re.split(r"#\d", commit, maxsplit=1)
+for commit in commits_since_tag:
+    split = re.split(r"#\d", commit, maxsplit=1)
 
-        if len(split) == 1:
-            continue
+    if len(split) == 1:
+        continue
 
-        commit_type = split[1].split(":")[0].strip()
+    commit_type = split[1].split(":")[0].strip()
 
-        if re.search(r"(fix|chore|docs)", commit_type):
-            # Patch
-            versions.patch += 1
-        elif re.search(f"(feat)", commit_type):
-            # Minor
-            versions.minor += 1
-        elif re.search(r"(BREAKING_CHANGE)", commit_type):
-            # Major
-            versions.major += 1
-        else:
-            print(f"Invalid commit type {commit_type}")
+    if re.search(r"(fix|chore|docs)", commit_type):
+        # Patch
+        versions.patch += 1
+    elif re.search(f"(feat)", commit_type):
+        # Minor
+        versions.minor += 1
+    elif re.search(r"(BREAKING_CHANGE)", commit_type):
+        # Major
+        versions.major += 1
+    else:
+        print(f"Invalid commit type {commit_type}")
 
-    Versions.from_version_str(str(versions))
-    subprocess.call(f"git tag {versions}")
+Versions.from_version_str(str(versions))
+subprocess.call(f"git tag {versions}")
