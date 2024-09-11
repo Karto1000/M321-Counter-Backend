@@ -1,0 +1,23 @@
+FROM python:3.9-alpine
+
+ARG PORT
+ARG HOST
+ARG OTHER_SERVERS
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_RUN_PORT=$PORT
+ENV FLASK_RUN_HOST=$HOST
+ENV FLASK_RUN_OTHER_SERVERS=$OTHER_SERVERS
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE $PORT
+
+CMD ["python", "app.py"]
