@@ -1,19 +1,49 @@
 #!/usr/bin/env python
-import dataclasses
 import re
 import subprocess
 import sys
 from typing import Self
 
 
-@dataclasses.dataclass
 class Versions:
-    patch: int
-    minor: int
-    major: int
+    __patch: int
+    __minor: int
+    __major: int
+
+    def __init__(self, *, patch: int, minor: int, major: int):
+        self.__patch = patch
+        self.__minor = minor
+        self.__major = major
+
+    @property
+    def patch(self) -> int:
+        return self.__patch
+
+    @property
+    def minor(self) -> int:
+        return self.__minor
+
+    @property
+    def major(self) -> int:
+        return self.__major
+
+    @patch.setter
+    def patch(self, patch: int):
+        self.__patch = patch
+
+    @minor.setter
+    def minor(self, minor: int):
+        self.__minor = minor
+        self.__patch = 0
+
+    @major.setter
+    def major(self, major: int):
+        self.__major = major
+        self.__minor = 0
+        self.__patch = 0
 
     def __repr__(self):
-        return f"v{self.major}.{self.minor}.{self.patch}"
+        return f"v{self.__major}.{self.__minor}.{self.__patch}"
 
     @classmethod
     def from_version_str(cls, version_str: str) -> Self:
@@ -62,12 +92,9 @@ for commit in commits_since_tag:
     elif re.search(f"(feat)", commit_type):
         # Minor
         versions.minor += 1
-        versions.patch = 0
     elif re.search(r"(BREAKING_CHANGE)", commit_type):
         # Major
         versions.major += 1
-        versions.minor = 0
-        versions.patch = 0
     else:
         print(f"Invalid commit type {commit_type}")
 
