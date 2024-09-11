@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-print("Checking commit Message")
-
 import re
 import sys
 
