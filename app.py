@@ -23,6 +23,6 @@ host = os.environ.get("FLASK_RUN_HOST")
 
 if __name__ == '__main__':
     from routes import ping_servers
-    
+
     count_history = ping_servers()
     app.run(debug=True, port=app_port, host=host)
