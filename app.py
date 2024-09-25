@@ -1,11 +1,7 @@
 import os
-import random
-import time
-from http import HTTPStatus
 
-import requests
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask, request
+from flask import Flask
 from flask_cors import CORS
 
 load_dotenv(find_dotenv())
