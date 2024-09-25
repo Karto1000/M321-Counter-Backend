@@ -17,7 +17,6 @@ def create_app() -> Flask:
     return _app
 
 
-# Comment
 app = create_app()
 app_port = int(os.environ.get("FLASK_RUN_PORT"))
 host = os.environ.get("FLASK_RUN_HOST")
